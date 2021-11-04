@@ -68,7 +68,12 @@ const Dialog = (props: DialogProps) => {
       return;
     }
 
-    if (selection.includes(id)) {
+    // Find if it's already selected and remove it
+    const existingIndex = selection.findIndex((candidate) => candidate === id);
+    if (existingIndex >= 0) {
+      const copy = [...selection];
+      copy.splice(existingIndex, 1);
+      setSelection(copy);
       return;
     }
 
@@ -92,7 +97,7 @@ const Dialog = (props: DialogProps) => {
       flow="row"
       columnGap="spacingXs"
       rowGap="spacingXs"
-      className={css({ margin: '0.5rem', height: '900px' })}
+      className={css({ padding: '0.5rem 0.5rem 4rem', minHeight: '900px' })}
     >
       { allProducts.map((product) => (
         <ProductOption
