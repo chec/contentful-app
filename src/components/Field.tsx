@@ -131,6 +131,7 @@ const Field = (props: FieldProps) => {
       { !loading && Boolean(products.length) && (<EntityList>
         { products.map(product => (
           <EntityListItem
+            key={product.id}
             title={product.name}
             thumbnailUrl={product.image ? product.image.url : undefined}
             dropdownListElements={renderDropdownOptions(product)}
