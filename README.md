@@ -8,6 +8,12 @@ This app enables the selection of products from you Commerce.js store on **Short
 
 [![Install to Contentful](https://www.ctfstatic.com/button/install-small.svg)](https://app.contentful.com/deeplink?link=apps&id=6RSa3c0pIawfk9yAXsIYzQ)
 
+### Install through the Chec Dashboard:
+
+Activate the integration within the dashboard and follow the steps:
+
+https://dashboard.chec.io/integrations/add
+
 ### Manual
 
 1. In your Contentful organization, create a new private app called 'Commerce.js App'.
