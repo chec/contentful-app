@@ -85,7 +85,7 @@ const Field = (props: FieldProps) => {
         ...fieldValue.slice(0, index),
         ...fieldValue.slice(index + 1),
       ]
-      : id,
+      : undefined,
     );
   }
 
@@ -94,6 +94,10 @@ const Field = (props: FieldProps) => {
   }, [publicKey]);
 
   useEffect(() => {
+    if (loading) {
+      return;
+    }
+
     if (fieldValue.length === 0 || !commerceSdk) {
       setProducts([]);
       return;
