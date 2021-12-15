@@ -11,12 +11,12 @@ import {
 import '@contentful/forma-36-react-components/dist/styles.css';
 import '@contentful/forma-36-fcss/dist/styles.css';
 import '@contentful/forma-36-tokens/dist/css/index.css';
+
 import './index.css';
 
 import Config from './components/ConfigScreen';
 import Field from './components/Field';
 import Dialog from './components/Dialog';
-
 import LocalhostWarning from './components/LocalhostWarning';
 
 if (process.env.NODE_ENV === 'development' && window.self === window.top) {

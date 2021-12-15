@@ -138,8 +138,8 @@ const Field = (props: FieldProps) => {
           />
         ))}
       </EntityList>) }
-      <Button onClick={handleButtonClick} className={css({ marginTop: '.5rem' })}>
-        { isMultiSelect ? 'Manage products' : 'Manage product' }
+      <Button onClick={handleButtonClick} className={css({ marginTop: '.5rem' })} buttonType="muted">
+        { isMultiSelect ? 'Select products' : 'Select a product' }
       </Button>
     </>
   );
