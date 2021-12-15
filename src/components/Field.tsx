@@ -63,7 +63,7 @@ const Field = (props: FieldProps) => {
       title: isMultiSelect ? 'Select products' : 'Select a product',
       shouldCloseOnOverlayClick: true,
       shouldCloseOnEscapePress: true,
-      minHeight: 900,
+      minHeight: 'max(500px, 80vh)',
       width: 1000,
     });
 

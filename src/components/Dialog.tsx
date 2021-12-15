@@ -97,7 +97,7 @@ const Dialog = (props: DialogProps) => {
       flow="row"
       columnGap="spacingXs"
       rowGap="spacingXs"
-      className={css({ padding: '0.5rem 0.5rem 4rem', minHeight: '900px' })}
+      className={css({ padding: '0.5rem 0.5rem 4rem' })}
     >
       { allProducts.map((product) => (
         <ProductOption
