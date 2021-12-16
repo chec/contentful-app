@@ -19,13 +19,18 @@ interface FieldProps {
   sdk: FieldExtensionSDK;
 }
 
+interface InvalidProduct {
+  id: string,
+  invalid: true,
+}
+
 const Field = (props: FieldProps) => {
   const { publicKey } = props.sdk.parameters.installation as AppInstallationParameters;
   const { field: fieldSdk } = props.sdk;
   const isMultiSelect = fieldSdk.type === 'Array';
   const [fieldValue, setFieldValue] = useState<Array<string>>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [products, setProducts] = useState<Array<Product>>([]);
+  const [products, setProducts] = useState<Array<Product|InvalidProduct>>([]);
 
   useEffect(() => {
     props.sdk.window.startAutoResizer();
@@ -63,7 +68,7 @@ const Field = (props: FieldProps) => {
       title: isMultiSelect ? 'Select products' : 'Select a product',
       shouldCloseOnOverlayClick: true,
       shouldCloseOnEscapePress: true,
-      minHeight: 900,
+      minHeight: 'max(500px, 80vh)',
       width: 1000,
     });
 
@@ -74,23 +79,56 @@ const Field = (props: FieldProps) => {
     return fieldSdk.setValue(isMultiSelect ? result : result[0]);
   }
 
+  const handleDeleteProduct = (id: string) => {
+    const index = fieldValue.findIndex(candidate => candidate === id);
+    if (index < 0) {
+      return;
+    }
+
+    fieldSdk.setValue(isMultiSelect
+      ? [
+        ...fieldValue.slice(0, index),
+        ...fieldValue.slice(index + 1),
+      ]
+      : undefined,
+    );
+  }
+
   const commerceSdk = useMemo(() => {
     return new Commerce(publicKey, false);
   }, [publicKey]);
 
   useEffect(() => {
+    if (loading) {
+      return;
+    }
+
     if (fieldValue.length === 0 || !commerceSdk) {
       setProducts([]);
+      return;
+    }
+
+    // Skip loading if we already have all the relevant products
+    if (fieldValue.every(id => products.find(candidate => candidate.id === id))) {
+      // Just filter out products that aren't in the field value
+      setProducts(products.filter(candidate => fieldValue.includes(candidate.id)));
       return;
     }
 
     setLoading(true);
 
     if (fieldValue.length === 1) {
-      commerceSdk.products.retrieve(fieldValue[0]).then((product) => {
+      const id = fieldValue[0];
+      commerceSdk.products.retrieve(id).then((product) => {
         setProducts([product]);
+      }).catch(() => {
+        setProducts([{
+          id,
+          invalid: true,
+        }]);
+      }).finally(() => {
         setLoading(false);
-      });
+      })
       return;
     }
 
@@ -98,9 +136,17 @@ const Field = (props: FieldProps) => {
       query: fieldValue.join(','),
       limit: 200, // Technically won't support a contentful field with more than 200 products.
     }).then(({ data: products }) => {
-      setProducts(products);
+      // Find products that weren't fetched (i.e. they were deleted) and fill in blanks
+      setProducts(fieldValue.reduce<Array<Product|InvalidProduct>>((acc, id) => ([
+        ...acc,
+        (products || []).find(candidate => candidate.id === id) || {
+          id,
+          invalid: true,
+        }
+      ]), []));
       setLoading(false);
     })
+    // eslint-disable-next-line
   }, [commerceSdk, fieldValue, isMultiSelect]);
 
   const renderDropdownOptions = ({ id }: Product) => (
@@ -114,6 +160,9 @@ const Field = (props: FieldProps) => {
         }}
       >
         Open in Chec Dashboard
+      </DropdownListItem>
+      <DropdownListItem onClick={() => handleDeleteProduct(id)}>
+        Delete
       </DropdownListItem>
     </DropdownList>
   )
@@ -130,16 +179,27 @@ const Field = (props: FieldProps) => {
       ) }
       { !loading && Boolean(products.length) && (<EntityList>
         { products.map(product => (
-          <EntityListItem
-            key={product.id}
-            title={product.name}
-            thumbnailUrl={product.image ? product.image.url : undefined}
-            dropdownListElements={renderDropdownOptions(product)}
-          />
+          'invalid' in product
+            ? <EntityListItem
+              key={product.id}
+              title="Deleted product"
+              contentType={product.id}
+              dropdownListElements={(
+                <DropdownListItem onClick={() => handleDeleteProduct(product.id)}>
+                  Delete
+                </DropdownListItem>
+              )}
+            />
+            : <EntityListItem
+              key={product.id}
+              title={product.name}
+              thumbnailUrl={product.image ? product.image.url : undefined}
+              dropdownListElements={renderDropdownOptions(product)}
+            />
         ))}
       </EntityList>) }
-      <Button onClick={handleButtonClick} className={css({ marginTop: '.5rem' })}>
-        { isMultiSelect ? 'Manage products' : 'Manage product' }
+      <Button onClick={handleButtonClick} className={css({ marginTop: '.5rem' })} buttonType="muted">
+        { isMultiSelect ? 'Select products' : 'Select a product' }
       </Button>
     </>
   );
