@@ -6,7 +6,7 @@ This app enables the selection of products from you Commerce.js store on **Short
 
 ### One click:
 
-[![Install to Contentful](https://www.ctfstatic.com/button/install-small.svg)](https://app.contentful.com/deeplink?link=apps&id=6RSa3c0pIawfk9yAXsIYzQ)
+[![Install to Contentful](https://www.ctfstatic.com/button/install-small.svg)](https://app.contentful.com/deeplink?link=apps&id=3GBoHfsPvqyV74chvKCzNP)
 
 ### Install through the Chec Dashboard:
 
